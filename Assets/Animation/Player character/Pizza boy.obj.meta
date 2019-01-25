@@ -1,14 +1,16 @@
 fileFormatVersion: 2
-guid: 9c1e33abc406ae94594b53cafe52f747
+guid: 956d36d776f4c7448821dcc2138b81a7
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2100000: Pizza boy texture
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Body
+    100000: default
+    100002: //RootNode
+    400000: default
+    400002: //RootNode
+    2100000: defaultMat
+    2300000: default
+    3300000: default
+    4300000: default
     9500000: //RootNode
     2186277476908879412: ImportLogs
   externalObjects: {}
@@ -64,7 +66,7 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
+    previousCalculatedGlobalScale: 1
     hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
@@ -82,9 +84,14 @@ ModelImporter:
     skeleton:
     - name: Pizza boy(Clone)
       parentName: 
-      position: {x: -0, y: 13.953232, z: -0.27303487}
-      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-      scale: {x: 165.37498, y: 100, z: 267.60608}
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: default
+      parentName: Pizza boy(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
