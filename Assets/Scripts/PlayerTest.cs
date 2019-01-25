@@ -41,6 +41,14 @@ public class PlayerTest : MonoBehaviour
     private Vector3 NextPoint;
     private int State = 0; //e.g State: 0 = balanced, -1 = pizza weight 1 to left, 2 = pizza weight 2 to right
 
+    //Control 2 variables
+    public float sensitivity = 50f;
+    public float forceIncreaseFactor = 3.0f;
+    private bool isDragging = false;
+    private bool addingForce = false;
+    private Vector3 initialTouchPos;
+    private float timeApplied = 0;
+
     //Huehuehue :)
     void Start()
     {
@@ -57,24 +65,60 @@ public class PlayerTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            isDragging = true;
+            initialTouchPos = Input.mousePosition;
+        }
+
         if (Input.GetMouseButton(0))
         {
-            //TODO: Calculate the mouse position offset from the center
+            /* Control 1 - increase force for amount off touch x position offset from center
             var mousePos = Input.mousePosition;
             var numDivides = (mousePos.x - MiddlePixel)/ DivideLength;
-
 
             //The aim for the player is to return the character to its original position
             var mouseAdjust = Mathf.Abs(numDivides * CameraAdjustScalePerDivide);
             var angleAdjust = numDivides * RotateSpeedPerDivide;
+            */
 
-            spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, spline1Orig, mouseAdjust);
-            Debug.Log("spline 1 localposition: " + spline1.localPosition);
-            Debug.Log("spline 1 originalPosition: " + spline1Orig);
-            spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, spline2Orig, mouseAdjust);
-            rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, rightHandIKOrig, mouseAdjust);
-            leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, leftHandIKOrig, mouseAdjust);
-            transform.Rotate(Vector3.forward * -angleAdjust * Time.deltaTime);
+            //Control 2
+            var diff = Input.mousePosition.x - initialTouchPos.x;
+            if (isDragging)
+            {
+                if(Mathf.Abs(diff) >= sensitivity)
+                {
+                    isDragging = false;
+                    addingForce = true;
+                    Debug.Log("Starting to add force...");
+                }
+            }
+
+            if (addingForce)
+            {
+                timeApplied += Time.deltaTime * forceIncreaseFactor;
+                var mouseAdjust = CameraAdjustScalePerDivide * timeApplied;
+                var angleAdjust = RotateSpeedPerDivide * timeApplied;
+                if(diff < 0)
+                {
+                    angleAdjust = -angleAdjust;
+                }
+
+                spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, spline1Orig, mouseAdjust);
+                Debug.Log("spline 1 localposition: " + spline1.localPosition);
+                Debug.Log("spline 1 originalPosition: " + spline1Orig);
+                spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, spline2Orig, mouseAdjust);
+                rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, rightHandIKOrig, mouseAdjust);
+                leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, leftHandIKOrig, mouseAdjust);
+                transform.Rotate(Vector3.forward * -angleAdjust * Time.deltaTime);
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDragging = false;
+            addingForce = false;
+            timeApplied = 1;
         }
         AdjustBalancingPosition();
     }
