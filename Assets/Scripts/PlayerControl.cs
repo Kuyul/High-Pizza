@@ -2,19 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerTest : MonoBehaviour
+public class PlayerControl : MonoBehaviour
 {
     //Declare public variables
     public Transform spline1;
     public Transform spline2;
     public Transform rightHandIK;
     public Transform leftHandIK;
+    public Transform rightPizzaPlate;
+    public Transform leftPizzaPlate;
 
     public float TransitionSpeed = 2.0f; //How many seconds for IK animation transition
     public float RotationSpeed = 2.0f; //Degrees per second
     public float CameraDivide = 5;
     public float CameraAdjustScalePerDivide = 2.0f;
     public float RotateSpeedPerDivide = 2.0f;
+    public float FallingAngle = 30.0f;
 
     //Declare (Left) State positions
     public Vector3[] Leftspline1Positions;
@@ -40,6 +43,7 @@ public class PlayerTest : MonoBehaviour
     private bool MoveToNextPoint = false;
     private Vector3 NextPoint;
     private int State = 0; //e.g State: 0 = balanced, -1 = pizza weight 1 to left, 2 = pizza weight 2 to right
+    private float fallValue;
 
     //Control 2 variables
     public float sensitivity = 50f;
@@ -58,13 +62,18 @@ public class PlayerTest : MonoBehaviour
         leftHandIKOrig = leftHandIK.transform.localPosition;
         DivideLength = Camera.main.pixelWidth/2/CameraDivide; //Works out the number of pixels per camera divide
         MiddlePixel = Camera.main.pixelWidth / 2;
-        Debug.Log(Camera.main.pixelWidth);
-        Debug.Log(DivideLength);
+        fallValue = Quaternion.Euler(0, 0, FallingAngle).z;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //When rotated x degrees, call gameover
+        if (Mathf.Abs(transform.rotation.z) > fallValue)
+        {
+            GameControl.instance.GameOver();
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             isDragging = true;
