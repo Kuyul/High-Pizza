@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 1635337017665042756}
   - component: {fileID: 6208612486277833709}
   - component: {fileID: 1491501815409162093}
+  - component: {fileID: 454690804591752093}
   m_Layer: 0
   m_Name: Pizza Box
-  m_TagString: Untagged
+  m_TagString: PizzaBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,3 +109,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &454690804591752093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3848458938861243043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e915d02e3d634d45af71c2bffb03d50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

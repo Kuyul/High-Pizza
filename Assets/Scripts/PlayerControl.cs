@@ -18,6 +18,7 @@ public class PlayerControl : MonoBehaviour
     public float CameraAdjustScalePerDivide = 2.0f;
     public float RotateSpeedPerDivide = 2.0f;
     public float FallingAngle = 30.0f;
+    public float SplineRotationAdjustSpeed = 0.5f;
 
     //Declare (Left) State positions
     public Vector3[] Leftspline1Positions;
@@ -30,6 +31,13 @@ public class PlayerControl : MonoBehaviour
     public Vector3[] Rightspline2Positions;
     public Vector3[] RightrightHandIKpositions;
     public Vector3[] RightleftHandIKpositions;
+
+    //Declare (Left) State rotations
+    public Vector3[] LeftSpline1Rotations;
+    public Vector3[] LeftSpline2Rotations;
+    //Declare (Right) State rotations
+    public Vector3[] RightSpline1Rotations;
+    public Vector3[] RightSpline2Rotations;
 
     //Declare original positions
     private Vector3 spline1Orig;
@@ -103,8 +111,10 @@ public class PlayerControl : MonoBehaviour
                 }
             }
 
+            //Add force to the player depending on where the mousebutton is
             if (addingForce)
             {
+                //for the length of time passed, increase the force
                 timeApplied += Time.deltaTime * forceIncreaseFactor;
                 var mouseAdjust = CameraAdjustScalePerDivide * timeApplied;
                 var angleAdjust = RotateSpeedPerDivide * timeApplied;
@@ -144,6 +154,8 @@ public class PlayerControl : MonoBehaviour
             spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, Leftspline2Positions[index], TransitionSpeed);
             rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, LeftrightHandIKpositions[index], TransitionSpeed);
             leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, LeftleftHandIKpositions[index], TransitionSpeed);
+            spline1.localRotation = Quaternion.Lerp(spline1.localRotation, Quaternion.Euler(LeftSpline1Rotations[index]), SplineRotationAdjustSpeed);
+            spline2.localRotation = Quaternion.Lerp(spline2.localRotation, Quaternion.Euler(LeftSpline2Rotations[index]), SplineRotationAdjustSpeed);
             transform.Rotate(Vector3.forward * RotationSpeed * Time.deltaTime);
         }
         else if (State > 0)
@@ -154,6 +166,8 @@ public class PlayerControl : MonoBehaviour
             spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, Rightspline2Positions[index], TransitionSpeed);
             rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, RightrightHandIKpositions[index], TransitionSpeed);
             leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, RightleftHandIKpositions[index], TransitionSpeed);
+            spline1.localRotation = Quaternion.Lerp(spline1.localRotation, Quaternion.Euler(RightSpline1Rotations[index]), SplineRotationAdjustSpeed);
+            spline2.localRotation = Quaternion.Lerp(spline2.localRotation, Quaternion.Euler(RightSpline2Rotations[index]), SplineRotationAdjustSpeed);
             transform.Rotate(Vector3.back * RotationSpeed * Time.deltaTime);
         }
     }
