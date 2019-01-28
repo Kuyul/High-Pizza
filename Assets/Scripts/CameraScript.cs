@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
-    private float moveSpeed=1.5f;
-    private float MaxCamOffset = 0.7f;
+    public float moveSpeed=1.5f;
+    public float MaxCamOffset = 0.7f;
+
     private bool goLeft;
     private bool goRight;
     private bool goMiddle;
