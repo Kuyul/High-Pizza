@@ -9,6 +9,7 @@ public class StageControl : MonoBehaviour
     public PlayerControl Player;
     public float PizzaFallHeight = 3.0f; //Height above the player hand where the pizza will start dropping from
     public float PizzaFallFrequency = 1.0f;
+    public float ExtraDownVelocity = 5.0f;
     public int MaximumUnbalance = 6;
 
     // Start is called before the first frame update
@@ -59,7 +60,7 @@ public class StageControl : MonoBehaviour
         //Set pizza falling position
         var pizzaFallPos = hand.position + new Vector3(0, PizzaFallHeight, 0);
         var pizzaObj = Instantiate(pizzaFake, pizzaFallPos, Quaternion.identity);
-        pizzaObj.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, Player.WalkSpeed);
+        pizzaObj.GetComponent<Rigidbody>().velocity = new Vector3(0, -ExtraDownVelocity, Player.WalkSpeed);
         pizzaObj.GetComponent<PizzaBoxScript>().Right = isRightHand;
         //pizzaObj.transform.SetParent(hand);
     }
