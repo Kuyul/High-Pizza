@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PizzaReal
   - PizzaFake
+  - PizzaPlate
   layers:
   - Default
   - TransparentFX

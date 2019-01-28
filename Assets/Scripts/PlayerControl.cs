@@ -11,6 +11,7 @@ public class PlayerControl : MonoBehaviour
     public Transform leftHandIK;
     public Transform rightPizzaPlate;
     public Transform leftPizzaPlate;
+    public Animator Anim;
 
     public float TransitionSpeed = 2.0f; //How many seconds for IK animation transition
     public float RotationSpeed = 2.0f; //Degrees per second
@@ -89,6 +90,14 @@ public class PlayerControl : MonoBehaviour
         if (Mathf.Abs(transform.rotation.z) > fallValue)
         {
             GameControl.instance.GameOver();
+            if(transform.rotation.z > 0)
+            {
+                Anim.SetTrigger("fallLeft");
+            }
+            else
+            {
+                Anim.SetTrigger("fallRight");
+            }
         }
 
         if (Input.GetMouseButtonDown(0))

@@ -22,6 +22,12 @@ public class GameControl : MonoBehaviour
 
     public void GameOver()
     {
+        StartCoroutine(WaitBeforeDeath());
+    }
+
+    IEnumerator WaitBeforeDeath()
+    {
+        yield return new WaitForSeconds(1.0f);
         SceneManager.LoadScene(0);
     }
 

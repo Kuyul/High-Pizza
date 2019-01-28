@@ -34,6 +34,29 @@ public class PizzaBoxScript : MonoBehaviour
             }
             fix = true;
         }
+
+        if (other.tag == "PizzaPlate")
+        {
+            Destroy(gameObject);
+            GameObject temp = Instantiate(GameControl.instance.pizza, other.transform.position, Quaternion.identity);
+            temp.transform.SetParent(other.gameObject.transform);
+            temp.GetComponent<Rigidbody>().isKinematic = true;
+            temp.transform.localPosition = new Vector3(0, 0.05f, 0);
+            temp.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+            if (!fix)
+            {
+                if (Right)
+                {
+                    GameControl.instance.AddRight();
+                }
+                else
+                {
+                    GameControl.instance.AddLeft();
+                }
+            }
+            fix = true;
+        }
     }
 }
 
