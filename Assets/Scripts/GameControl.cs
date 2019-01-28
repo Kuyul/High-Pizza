@@ -7,7 +7,9 @@ public class GameControl : MonoBehaviour
 {
     public static GameControl instance;
 
+    //Declare public variables
     public GameObject pizza;
+    public PlayerControl Player;
 
     // Start is called before the first frame update
     void Awake()
@@ -21,5 +23,20 @@ public class GameControl : MonoBehaviour
     public void GameOver()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void AddRight()
+    {
+        Player.AddRight();
+    }
+
+    public void AddLeft()
+    {
+        Player.AddLeft();
+    }
+
+    public int GetPlayerUnbalance()
+    {
+        return Player.GetUnbalance();
     }
 }

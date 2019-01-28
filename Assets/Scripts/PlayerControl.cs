@@ -20,6 +20,8 @@ public class PlayerControl : MonoBehaviour
     public float FallingAngle = 30.0f;
     public float SplineRotationAdjustSpeed = 0.5f;
     public float WalkSpeed = 2.0f;
+    public float WeightScale = 1.0f;
+    public float StateChangeAngle = 3.0f;
 
     //Declare (Left) State positions
     public Vector3[] Leftspline1Positions;
@@ -56,12 +58,15 @@ public class PlayerControl : MonoBehaviour
 
     //Control variables
     public bool control1;
+    public bool release;
     public float sensitivity = 50f;
     public float forceIncreaseFactor = 3.0f;
     private bool isDragging = false;
     private bool addingForce = false;
     private Vector3 initialTouchPos;
     private float timeApplied = 0;
+    private int Unbalance = 0;
+    private float NumDivides = 0;
 
     //Huehuehue :)
     void Start()
@@ -98,54 +103,29 @@ public class PlayerControl : MonoBehaviour
 
             if (control1)
             {
-                var mousePos = Input.mousePosition;
-                var numDivides = (mousePos.x - MiddlePixel) / DivideLength;
 
-                //The aim for the player is to return the character to its original position
-                var mouseAdjust = Mathf.Abs(numDivides * CameraAdjustScalePerDivide);
-                var angleAdjust = numDivides * RotateSpeedPerDivide;
-
-                spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, spline1Orig, mouseAdjust);
-                spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, spline2Orig, mouseAdjust);
-                rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, rightHandIKOrig, mouseAdjust);
-                leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, leftHandIKOrig, mouseAdjust);
-                transform.Rotate(Vector3.forward * -angleAdjust * Time.deltaTime);
-            }
-            //Control 2 logic
-            else
-            {
-                //Control 2
-                var diff = Input.mousePosition.x - initialTouchPos.x;
-                if (isDragging)
+                if (!release)
                 {
-                    if (Mathf.Abs(diff) >= sensitivity)
-                    {
-                        isDragging = false;
-                        addingForce = true;
-                        Debug.Log("Starting to add force...");
-                    }
-                }
+                    var mousePos = Input.mousePosition;
+                    var numDivides = (mousePos.x - initialTouchPos.x) / DivideLength;
+                    Debug.Log(numDivides);
 
-                //Add force to the player depending on where the mousebutton is
-                if (addingForce)
-                {
-                    //for the length of time passed, increase the force
-                    timeApplied += Time.deltaTime * forceIncreaseFactor;
-                    var mouseAdjust = CameraAdjustScalePerDivide * timeApplied;
-                    var angleAdjust = RotateSpeedPerDivide * timeApplied;
-                    if (diff < 0)
-                    {
-                        angleAdjust = -angleAdjust;
-                    }
+                    var mouseAdjust = Mathf.Abs(numDivides * CameraAdjustScalePerDivide);
+                    var angleAdjust = numDivides * RotateSpeedPerDivide;
 
                     spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, spline1Orig, mouseAdjust);
                     spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, spline2Orig, mouseAdjust);
                     rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, rightHandIKOrig, mouseAdjust);
                     leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, leftHandIKOrig, mouseAdjust);
                     transform.Rotate(Vector3.forward * -angleAdjust * Time.deltaTime);
+                }else
+                {
+                    var mousePos = Input.mousePosition;
+                    NumDivides += (mousePos.x - initialTouchPos.x) / DivideLength;
+                    initialTouchPos = mousePos;
                 }
             }
-
+           
             if (Input.GetMouseButtonUp(0))
             {
                 isDragging = false;
@@ -153,16 +133,43 @@ public class PlayerControl : MonoBehaviour
                 timeApplied = 1;
             }
         }
+
+
+        if (release)
+        {
+            //The aim for the player is to return the character to its original position
+            var mouseAdjust = Mathf.Abs(NumDivides * CameraAdjustScalePerDivide);
+            var angleAdjust = NumDivides * RotateSpeedPerDivide;
+
+            spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, spline1Orig, mouseAdjust);
+            spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, spline2Orig, mouseAdjust);
+            rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, rightHandIKOrig, mouseAdjust);
+            leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, leftHandIKOrig, mouseAdjust);
+            transform.Rotate(Vector3.forward * -angleAdjust * Time.deltaTime);
+        }
+
+        //Depending on where the pizza unbalance is, rotate towards that side of the axis
+        var RotateRate = RotationSpeed * Unbalance * WeightScale;
+        transform.Rotate(Vector3.forward * RotateRate * Time.deltaTime);
+        SetState();
         AdjustBalancingPosition();
     }
 
     //Depending on the degree of unbalance, adjust the spine and hand positions to a pre-designated localposition
     private void AdjustBalancingPosition()
     {
+        var index = Mathf.Abs(State) - 1;
+        var startPos = spline1Orig;
+        var angle = transform.rotation.z;
+        var value = Mathf.Abs(angle) / (Quaternion.Euler(0, 0, StateChangeAngle).z * 3);
         //If the unbalance is heavier to the left
         if (State < 0)
         {
-            var index = Mathf.Abs(State) - 1;
+            spline1.localPosition = value * (Leftspline1Positions[2] - startPos);
+            spline2.localPosition = value * (Leftspline2Positions[2] - startPos);
+            rightHandIK.localPosition = value * (LeftrightHandIKpositions[2] - startPos);
+            leftHandIK.localPosition = value * (LeftleftHandIKpositions[2] - startPos);
+            /*
             //Make transition to target position for the amount of unbalanced weight
             spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, Leftspline1Positions[index], TransitionSpeed);
             spline2.localPosition = Vector3.MoveTowards(spline2.localPosition, Leftspline2Positions[index], TransitionSpeed);
@@ -170,10 +177,15 @@ public class PlayerControl : MonoBehaviour
             leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, LeftleftHandIKpositions[index], TransitionSpeed);
             spline1.localRotation = Quaternion.Lerp(spline1.localRotation, Quaternion.Euler(LeftSpline1Rotations[index]), SplineRotationAdjustSpeed);
             spline2.localRotation = Quaternion.Lerp(spline2.localRotation, Quaternion.Euler(LeftSpline2Rotations[index]), SplineRotationAdjustSpeed);
-            transform.Rotate(Vector3.forward * RotationSpeed * Time.deltaTime);
+            */
         }
-        else if (State > 0)
+        else if (State >= 0)
         {
+            spline1.localPosition = value * (Rightspline1Positions[2] - startPos);
+            spline2.localPosition = value * (Rightspline2Positions[2] - startPos);
+            rightHandIK.localPosition = value * (RightrightHandIKpositions[2] - startPos);
+            leftHandIK.localPosition = value * (RightleftHandIKpositions[2] - startPos);
+            /*
             var index = State - 1;
             //Make transition to target position for the amount of unbalanced weight
             spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, Rightspline1Positions[index], TransitionSpeed);
@@ -182,8 +194,8 @@ public class PlayerControl : MonoBehaviour
             leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, RightleftHandIKpositions[index], TransitionSpeed);
             spline1.localRotation = Quaternion.Lerp(spline1.localRotation, Quaternion.Euler(RightSpline1Rotations[index]), SplineRotationAdjustSpeed);
             spline2.localRotation = Quaternion.Lerp(spline2.localRotation, Quaternion.Euler(RightSpline2Rotations[index]), SplineRotationAdjustSpeed);
-            transform.Rotate(Vector3.back * RotationSpeed * Time.deltaTime);
-        }
+            */
+        }/*
         else
         {
             spline1.localPosition = Vector3.MoveTowards(spline1.localPosition, spline1Orig, TransitionSpeed);
@@ -191,7 +203,7 @@ public class PlayerControl : MonoBehaviour
             rightHandIK.localPosition = Vector3.MoveTowards(rightHandIK.localPosition, rightHandIKOrig, TransitionSpeed);
             leftHandIK.localPosition = Vector3.MoveTowards(leftHandIK.localPosition, leftHandIKOrig, TransitionSpeed);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.identity, RotationSpeed * Time.deltaTime);
-        }
+        }*/
     }
 
     //Add -1 to add weight to the left
@@ -199,5 +211,34 @@ public class PlayerControl : MonoBehaviour
     public void AddState(int value)
     {
         State += value;
+    }
+
+    //Sets the state of the player
+    public void SetState()
+    {
+        var angle = transform.rotation.z;
+        var stateChangeAngle = Quaternion.Euler(0, 0, StateChangeAngle).z;
+        var value = angle / stateChangeAngle;
+        if (Mathf.Abs(value) <= Rightspline1Positions.Length)
+        {
+            State = -(int)(value + 1);
+        }
+    }
+
+    public void AddRight()
+    {
+        Unbalance--;
+        Debug.Log(Unbalance);
+    }
+
+    public void AddLeft()
+    {
+        Unbalance++;
+        Debug.Log(Unbalance);
+    }
+
+    public int GetUnbalance()
+    {
+        return Unbalance;
     }
 }

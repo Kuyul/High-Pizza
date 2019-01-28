@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class PizzaBoxScript : MonoBehaviour
 {
+    //Declare public variables
+    public bool Right;
+
+    //Declare private variables
     private float pizzaOffset = 0.5f;
+    private bool fix = false;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -14,8 +19,20 @@ public class PizzaBoxScript : MonoBehaviour
             GameObject temp = Instantiate(GameControl.instance.pizza, other.transform.position, Quaternion.identity);
             temp.transform.SetParent(other.gameObject.transform);
             temp.GetComponent<Rigidbody>().isKinematic = true;
-            temp.transform.localPosition = new Vector3(0, pizzaOffset , 0);
+            temp.transform.localPosition = new Vector3(0, pizzaOffset, 0);
             temp.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+            if (!fix) { 
+                if (Right)
+                {
+                    GameControl.instance.AddRight();
+                }
+                else
+                {
+                    GameControl.instance.AddLeft();
+                }
+            }
+            fix = true;
         }
     }
 }
