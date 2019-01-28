@@ -4,30 +4,19 @@ using UnityEngine;
 
 public class PizzaBoxScript : MonoBehaviour
 {
-    bool Fix = false;
+    private float pizzaOffset = 0.5f;
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if(collision.gameObject.tag == "PizzaBox")
+        if (other.tag == "PizzaReal")
         {
-            if (!Fix)
-            {
-                //Get Collider
-                var col = collision.gameObject.GetComponent<BoxCollider>();
-                var offset = col.bounds.extents.y; //half height of the previous box
-                //offset += GetComponent<BoxCollider>().bounds.extents.y / 2; //half height of this box
-                transform.position = collision.transform.position + new Vector3(0, offset, 0);
-                transform.SetParent(collision.gameObject.transform);
-                collision.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-                Fix = true;
-                StartCoroutine(FixAfterSec(collision, offset));
-            }
+            Destroy(gameObject);
+            GameObject temp = Instantiate(GameControl.instance.pizza, other.transform.position, Quaternion.identity);
+            temp.transform.SetParent(other.gameObject.transform);
+            temp.GetComponent<Rigidbody>().isKinematic = true;
+            temp.transform.localPosition = new Vector3(0, pizzaOffset , 0);
+            temp.transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
     }
-
-    IEnumerator FixAfterSec(Collision collision, float offset)
-    {
-        yield return new WaitForSeconds(1.0f);
-        
-    }
 }
+

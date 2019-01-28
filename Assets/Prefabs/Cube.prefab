@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 5216505603737163282}
   - component: {fileID: 5216505603737163279}
   m_Layer: 0
-  m_Name: Cube
-  m_TagString: PizzaBox
+  m_Name: CubeRight
+  m_TagString: PizzaReal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

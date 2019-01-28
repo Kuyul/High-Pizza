@@ -5,9 +5,9 @@ using UnityEngine;
 public class StageControl : MonoBehaviour
 {
     //Declare public variables
-    public GameObject Pizza; //Pizza Prefab
+    public GameObject pizzaFake; //Pizza Prefab
     public PlayerControl Player;
-    public float PizzaFallHeight = 2.0f; //Height above the player hand where the pizza will start dropping from
+    public float PizzaFallHeight = 3.0f; //Height above the player hand where the pizza will start dropping from
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +31,7 @@ public class StageControl : MonoBehaviour
 
         //Set pizza falling position
         var pizzaFallPos = hand.position + new Vector3(0, PizzaFallHeight, 0);
-        var pizzaObj = Instantiate(Pizza, pizzaFallPos, Quaternion.identity);
-        pizzaObj.transform.SetParent(hand);
+        var pizzaObj = Instantiate(pizzaFake, pizzaFallPos, Quaternion.identity);
+       // pizzaObj.transform.SetParent(hand);
     }
 }

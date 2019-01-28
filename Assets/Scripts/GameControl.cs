@@ -7,6 +7,8 @@ public class GameControl : MonoBehaviour
 {
     public static GameControl instance;
 
+    public GameObject pizza;
+
     // Start is called before the first frame update
     void Awake()
     {
